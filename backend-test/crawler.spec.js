@@ -38,7 +38,6 @@ describe('Crawler full end', () => {
     return Promise.all([firstMock, secondMock])
       .then(() => crawler.getSiteMap())
       .then(siteMap => {
-        console.log(siteMap)
         siteMap.images.should.deep.equal([
           `${crawlUrl}/assets/msm_logo.png`,
           `${crawlUrl}/assets/msm_logo_second.png`
@@ -46,6 +45,7 @@ describe('Crawler full end', () => {
         siteMap.links.should.deep.equal([
           'https://beta.companieshouse.gov.uk/company/09793365',
           'http://uk.linkedin.com/in/msmitc',
+          'http://localhost:7543/second',
           'https://beta.companieshouse.gov.uk/company/09793365_second'
         ])
       })
