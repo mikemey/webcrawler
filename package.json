@@ -1,0 +1,41 @@
+{
+  "name": "webcrawler",
+  "version": "0.0.1",
+  "description": "Web crawler",
+  "engines": {
+    "node": "10"
+  },
+  "scripts": {
+    "test": "npm run lint -s && npm run be-test -s",
+    "lint": "standard && eslint --ignore-path .gitignore .",
+    "be-test": "mocha 'backend-test/**/**.spec.js' -r chai/register-should"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mikemey/dstuser.git"
+  },
+  "author": "mikemey",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^5.9.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-mocha": "^5.2.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "mocha": "^5.2.0",
+    "mockttp": "^0.12.3",
+    "nock": "^10.0.2",
+    "standard": "^12.0.1"
+  },
+  "standard": {
+    "env": [
+      "mocha"
+    ]
+  }
+}
