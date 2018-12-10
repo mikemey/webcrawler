@@ -1,12 +1,16 @@
 const requests = require('./requests')
 
 const createCrawler = site => {
+  const dropTrailinSlash = url => url.replace(/\/$/, '')
+
+  const startSite = dropTrailinSlash(site)
+
   const getSiteMap = () => {
     const visitedUrls = new Set()
-    const sitemap = { images: new Set(), links: new Set([site]) }
+    const sitemap = { images: new Set(), links: new Set([startSite]) }
 
     const crawlThrough = pageUrl => {
-      const cleanPageUrl = cleanUrl(pageUrl)
+      const cleanPageUrl = dropTrailinSlash(pageUrl)
 
       console.log('extracting: ' + cleanPageUrl)
       visitedUrls.add(cleanPageUrl)
@@ -19,15 +23,13 @@ const createCrawler = site => {
         })
     }
 
-    const cleanUrl = url => url.replace(/\/$/, '')
-
     const findPagesToVisit = result => result.links.filter(link => {
       const isLocalLink = link.startsWith(site)
-      const alreadyCrawledLink = !visitedUrls.has(cleanUrl(link))
+      const alreadyCrawledLink = !visitedUrls.has(dropTrailinSlash(link))
       return isLocalLink && alreadyCrawledLink
     })
 
-    return crawlThrough(site).then(() => {
+    return crawlThrough(startSite).then(() => {
       return {
         images: Array.from(sitemap.images),
         links: Array.from(sitemap.links)
@@ -57,7 +59,7 @@ const createCrawler = site => {
   const cleanHref = (el, attributeName = 'href') => {
     const href = el.attribs[attributeName]
     return href.startsWith('/')
-      ? site + href
+      ? startSite + href
       : href
   }
 
