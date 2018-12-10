@@ -21,6 +21,10 @@ Results in a JSON object with images and links listed:
 }
 ```
 
+#### Tests:
+
+- run `npm test`
+
 #### Assumptions:
 
 -  As requirement says "links to static content such as images and to external URLs.":
