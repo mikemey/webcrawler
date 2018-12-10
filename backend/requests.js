@@ -4,7 +4,6 @@ const cheerio = require('cheerio')
 const htmlTransformOpts = (url, method = 'GET') => Object.assign(
   { uri: url },
   { method },
-  { followRedirect: false },
   { transform: body => cheerio.load(body) }
 )
 
