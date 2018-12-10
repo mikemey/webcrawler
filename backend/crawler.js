@@ -1,20 +1,27 @@
 const requests = require('./requests')
 
-const getSiteMap = site => {
-  const extractImages = page => {
-    const result = []
-    page('img').each((_, imageEl) => {
-      const imgSrc = cleanHref(imageEl, 'src')
-      result.push(imgSrc)
-    })
-    return result
+const createCrawler = site => {
+  const getSiteMap = () => {
+    return extractUrlsFrom(site)
   }
 
-  const extractLinks = page => {
+  const extractUrlsFrom = site => requests.getHtml(site)
+    .then(page => {
+      const images = extractImages(page)
+      const links = extractLinks(page)
+      return {
+        images, links
+      }
+    })
+
+  const extractImages = page => extractFrom(page, 'img', 'src')
+  const extractLinks = page => extractFrom(page, 'a')
+
+  const extractFrom = (page, tag, attrName) => {
     const result = []
-    page('a').each((_, anchorEl) => {
-      const anchorSrc = cleanHref(anchorEl)
-      result.push(anchorSrc)
+    page(tag).each((_, el) => {
+      const href = cleanHref(el, attrName)
+      result.push(href)
     })
     return result
   }
@@ -26,14 +33,7 @@ const getSiteMap = site => {
       : href
   }
 
-  return requests.getHtml(site)
-    .then(page => {
-      const images = extractImages(page)
-      const outlinks = extractLinks(page)
-      return {
-        images, outlinks
-      }
-    })
+  return { getSiteMap }
 }
 
-module.exports = { getSiteMap }
+module.exports = createCrawler
