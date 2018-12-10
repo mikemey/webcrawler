@@ -7,7 +7,11 @@ const createCrawler = site => {
 
   const getSiteMap = () => {
     const visitedUrls = new Set()
-    const sitemap = { images: new Set(), links: new Set([startSite]) }
+    const sitemap = {
+      images: new Set(),
+      links: new Set([startSite]),
+      errorLinks: new Set()
+    }
 
     const crawlThrough = pageUrl => {
       const cleanPageUrl = dropTrailinSlash(pageUrl)
@@ -21,6 +25,12 @@ const createCrawler = site => {
           result.links.forEach(link => { sitemap.links.add(link) })
           return Promise.all(pagesToVisit.map(crawlThrough))
         })
+        .catch(error => {
+          console.log(`failed: ${cleanPageUrl}`)
+          console.log(error.message)
+          sitemap.links.delete(cleanPageUrl)
+          sitemap.errorLinks.add(cleanPageUrl)
+        })
     }
 
     const findPagesToVisit = result => result.links.filter(link => {
@@ -32,7 +42,8 @@ const createCrawler = site => {
     return crawlThrough(startSite).then(() => {
       return {
         images: Array.from(sitemap.images),
-        links: Array.from(sitemap.links)
+        links: Array.from(sitemap.links),
+        errorLinks: Array.from(sitemap.errorLinks)
       }
     })
   }
@@ -50,7 +61,7 @@ const createCrawler = site => {
   const extractFrom = (page, tag, attrName) => {
     const result = []
     page(tag).each((_, el) => {
-      const href = cleanHref(el, attrName)
+      const href = dropTrailinSlash(cleanHref(el, attrName))
       result.push(href)
     })
     return result

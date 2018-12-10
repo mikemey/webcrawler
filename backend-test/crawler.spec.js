@@ -71,10 +71,34 @@ describe('Crawler full end', () => {
         ])
         siteMap.links.should.deep.equal([
           'http://localhost:7543',
-          'http://localhost:7543/',
           'http://localhost:7543/second',
           'http://localhost:7543/third'
         ])
+      })
+  })
+
+  it('should report start page with error', () => {
+    return mockServer.get('/').thenReply(404, '')
+      .then(() => crawler.getSiteMap())
+      .then(siteMap => {
+        siteMap.images.should.deep.equal([])
+        siteMap.links.should.deep.equal([])
+        siteMap.errorLinks.should.deep.equal(['http://localhost:7543'])
+      })
+  })
+
+  it('should report linked pages with errors', () => {
+    return Promise.all([
+      mockServer.get('/').thenReply(200, readTestFile('linked.first.html')),
+      mockServer.get('/second').thenReply(404, '')
+    ]).then(() => crawler.getSiteMap())
+      .then(siteMap => {
+        siteMap.links.should.deep.equal([
+          'http://localhost:7543',
+          'https://beta.companieshouse.gov.uk/company/09793365',
+          'http://uk.linkedin.com/in/msmitc'
+        ])
+        siteMap.errorLinks.should.deep.equal(['http://localhost:7543/second'])
       })
   })
 })
