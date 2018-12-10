@@ -23,6 +23,7 @@ describe('Crawler full end', () => {
       .then(siteMap => {
         siteMap.images.should.deep.equal([`${crawlUrl}/assets/msm_logo.png`])
         siteMap.links.should.deep.equal([
+          'http://localhost:7543',
           'https://beta.companieshouse.gov.uk/company/09793365',
           'http://uk.linkedin.com/in/msmitc'
         ])
@@ -30,12 +31,12 @@ describe('Crawler full end', () => {
   })
 
   it('follow local links', () => {
-    const firstHtml = readTestFile('linked.first.html')
-    const secondHtml = readTestFile('linked.second.html')
-    const firstMock = mockServer.get('/').thenReply(200, firstHtml)
-    const secondMock = mockServer.get('/second').thenReply(200, secondHtml)
-
-    return Promise.all([firstMock, secondMock])
+    const mockedUrls = [
+      { path: '/', response: readTestFile('linked.first.html') },
+      { path: '/second', response: readTestFile('linked.second.html') }
+    ]
+    return Promise
+      .all(mockedUrls.map(murl => mockServer.get(murl.path).thenReply(200, murl.response)))
       .then(() => crawler.getSiteMap())
       .then(siteMap => {
         siteMap.images.should.deep.equal([
@@ -43,10 +44,31 @@ describe('Crawler full end', () => {
           `${crawlUrl}/assets/msm_logo_second.png`
         ])
         siteMap.links.should.deep.equal([
+          'http://localhost:7543',
           'https://beta.companieshouse.gov.uk/company/09793365',
           'http://uk.linkedin.com/in/msmitc',
           'http://localhost:7543/second',
           'https://beta.companieshouse.gov.uk/company/09793365_second'
+        ])
+      })
+  })
+
+  xit('should not crawl indefinitely', () => {
+    const mockedUrls = [
+      { path: '/', response: readTestFile('loop.first.html') },
+      { path: '/second', response: readTestFile('loop.second.html') },
+      { path: '/third', response: readTestFile('loop.second.html') }
+    ]
+
+    return Promise
+      .all(mockedUrls.map(murl => mockServer.get(murl.path).thenReply(200, murl.response)))
+      .then(() => crawler.getSiteMap())
+      .then(siteMap => {
+        siteMap.images.should.deep.equal([])
+        siteMap.links.should.deep.equal([
+          'http://localhost:7543',
+          'http://localhost:7543/second',
+          'http://localhost:7543/third'
         ])
       })
   })

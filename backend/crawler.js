@@ -3,13 +3,13 @@ const requests = require('./requests')
 const createCrawler = site => {
   const getSiteMap = () => {
     const visitedUrls = new Set()
-    const sitemap = { images: new Set(), links: new Set() }
+    const sitemap = { images: new Set(), links: new Set([site]) }
 
     const crawlThrough = pageUrl => {
       console.log('extracting: ' + pageUrl)
+      visitedUrls.add(pageUrl)
       return extractUrlsFrom(pageUrl)
         .then(result => {
-          visitedUrls.add(pageUrl)
           const pagesToVisit = findPagesToVisit(result)
           result.images.forEach(image => { sitemap.images.add(image) })
           result.links.forEach(link => { sitemap.links.add(link) })
@@ -27,7 +27,7 @@ const createCrawler = site => {
     })
   }
 
-  const extractUrlsFrom = site => requests.getHtml(site)
+  const extractUrlsFrom = pageUrl => requests.getHtml(pageUrl)
     .then(page => {
       const images = extractImages(page)
       const links = extractLinks(page)
