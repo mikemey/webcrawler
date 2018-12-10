@@ -17,7 +17,8 @@ Results in a JSON object with images and links listed:
    [ "https://msm-itc.com",
      "https://beta.companieshouse.gov.uk/company/09793365",
      "http://uk.linkedin.com/in/msmitc" 
-   ]
+   ],
+   "errorLinks": []
 }
 ```
 
