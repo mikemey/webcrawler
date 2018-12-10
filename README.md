@@ -12,12 +12,12 @@
 Results in a JSON object with images and links listed:
 ```json
 { 
-  images: [ 'https://msm-itc.com/assets/msm_logo.png' ],
-  links:
-   [ 'https://msm-itc.com',
-     'https://beta.companieshouse.gov.uk/company/09793365',
-     'http://uk.linkedin.com/in/msmitc' 
-   ],
+  "images": [ "https://msm-itc.com/assets/msm_logo.png" ],
+  "links":
+   [ "https://msm-itc.com",
+     "https://beta.companieshouse.gov.uk/company/09793365",
+     "http://uk.linkedin.com/in/msmitc" 
+   ]
 }
 ```
 
