@@ -53,20 +53,25 @@ describe('Crawler full end', () => {
       })
   })
 
-  xit('should not crawl indefinitely', () => {
+  it('should not crawl indefinitely', () => {
     const mockedUrls = [
       { path: '/', response: readTestFile('loop.first.html') },
       { path: '/second', response: readTestFile('loop.second.html') },
-      { path: '/third', response: readTestFile('loop.second.html') }
+      { path: '/third', response: readTestFile('loop.third.html') }
     ]
 
     return Promise
       .all(mockedUrls.map(murl => mockServer.get(murl.path).thenReply(200, murl.response)))
       .then(() => crawler.getSiteMap())
       .then(siteMap => {
-        siteMap.images.should.deep.equal([])
+        siteMap.images.should.deep.equal([
+          `${crawlUrl}/assets/msm_logo_first.png`,
+          `${crawlUrl}/assets/msm_logo_second.png`,
+          `${crawlUrl}/assets/msm_logo_third.png`
+        ])
         siteMap.links.should.deep.equal([
           'http://localhost:7543',
+          'http://localhost:7543/',
           'http://localhost:7543/second',
           'http://localhost:7543/third'
         ])

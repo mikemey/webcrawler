@@ -6,9 +6,11 @@ const createCrawler = site => {
     const sitemap = { images: new Set(), links: new Set([site]) }
 
     const crawlThrough = pageUrl => {
-      console.log('extracting: ' + pageUrl)
-      visitedUrls.add(pageUrl)
-      return extractUrlsFrom(pageUrl)
+      const cleanPageUrl = cleanUrl(pageUrl)
+
+      console.log('extracting: ' + cleanPageUrl)
+      visitedUrls.add(cleanPageUrl)
+      return extractUrlsFrom(cleanPageUrl)
         .then(result => {
           const pagesToVisit = findPagesToVisit(result)
           result.images.forEach(image => { sitemap.images.add(image) })
@@ -17,7 +19,13 @@ const createCrawler = site => {
         })
     }
 
-    const findPagesToVisit = result => result.links.filter(link => link.startsWith(site))
+    const cleanUrl = url => url.replace(/\/$/, '')
+
+    const findPagesToVisit = result => result.links.filter(link => {
+      const isLocalLink = link.startsWith(site)
+      const alreadyCrawledLink = !visitedUrls.has(cleanUrl(link))
+      return isLocalLink && alreadyCrawledLink
+    })
 
     return crawlThrough(site).then(() => {
       return {
