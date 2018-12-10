@@ -15,12 +15,11 @@ describe('Crawler full end', () => {
   beforeEach(() => mockServer.start(port))
   afterEach(() => mockServer.stop())
 
-  it('should run test', () => {
+  it('return simple result', () => {
     return mockServer.get('/')
       .thenReply(200, simpleTestHtml)
       .then(() => crawler.getSiteMap(crawlUrl))
       .then(siteMap => {
-        console.log(siteMap)
         siteMap.images.should.deep.equal([`${crawlUrl}/assets/msm_logo.png`])
         siteMap.outlinks.should.deep.equal([
           'https://beta.companieshouse.gov.uk/company/09793365',
